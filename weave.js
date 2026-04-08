@@ -3292,6 +3292,73 @@
         });
     }
 
+
+    // ── Export / Import ──
+    function exportSwatches() {
+        var data = {
+            swatches: loadSwatches(),
+            groups:   loadGroups()
+        };
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'weave-swatches.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function importSwatches(file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                var data = JSON.parse(e.target.result);
+                var incoming = Array.isArray(data.swatches) ? data.swatches : [];
+                var inGroups = Array.isArray(data.groups)   ? data.groups   : [];
+
+                var existing = loadGroups();
+                inGroups.forEach(function (g) {
+                    if (!existing.some(function (x) { return x.id === g.id; })) {
+                        existing.push(g);
+                    }
+                });
+                saveGroups(existing);
+
+                var current = loadSwatches();
+                incoming.forEach(function (s) {
+                    if (!current.some(function (x) { return x.id === s.id; })) {
+                        current.push(s);
+                    }
+                });
+                saveSwatches(current);
+
+                populateGroupSelects();
+                renderSavedList();
+                alert('匯入成功！共載入 ' + incoming.length + ' 筆色票。');
+            } catch (err) {
+                alert('匯入失敗：檔案格式不正確。');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    var exportSwatchBtn   = document.getElementById('exportSwatchBtn');
+    var importSwatchInput = document.getElementById('importSwatchInput');
+
+    if (exportSwatchBtn) {
+        exportSwatchBtn.addEventListener('click', exportSwatches);
+    }
+    if (importSwatchInput) {
+        importSwatchInput.addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                importSwatches(e.target.files[0]);
+                e.target.value = '';
+            }
+        });
+    }
+
     // ── Init ──
     populateGroupSelects();
     draw();
