@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>è²ç¹æ¨¡ç</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="weave.css">
+</head>
+<body>
+
+    <h1 class="page-title">è²ç¹æ¨¡æ¬<span>ç¶ç·¯ç¨ç«ç</span></h1>
+
+    <div class="page-main">
+    <div class="wrapper">
+        <div class="controls">
+            <div class="section-title">è²å½©éç½®</div>
+            <div class="control-row">
+                <label>ç¶ç·é¡è²ï¼ç¸±åï¼<span class="color-label-codes"><span id="warpHex">#2C5282</span><span id="warpPantoneCode" class="pantone-label-line"></span></span></label>
+                <div class="color-picker-row">
+                    <input type="color" id="warpColor" value="#2c5282">
+                    <button type="button" id="warpPantoneSearchBtn" class="btn-pantone-search" title="Pantone è²ç¥¨æå°" aria-label="éåç¶ç· Pantone è²ç¥¨è¦çª">
+                        <svg class="pantone-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="control-row">
+                <label>ç·¯ç·é¡è²ï¼æ©«åï¼<span class="color-label-codes"><span id="weftHex">#E2E2E2</span><span id="weftPantoneCode" class="pantone-label-line"></span></span></label>
+                <div class="color-picker-row">
+                    <input type="color" id="weftColor" value="#e2e2e2">
+                    <button type="button" id="weftPantoneSearchBtn" class="btn-pantone-search" title="Pantone è²ç¥¨æå°" aria-label="éåç·¯ç· Pantone è²ç¥¨è¦çª">
+                        <svg class="pantone-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="control-row">
+                <button type="button" id="swapColorsBtn" class="btn-secondary">ç¶ç·¯é¡è²äºæ <span class="btn-icon" aria-hidden="true">â</span></button>
+            </div>
+
+            <div class="section-title">çµç§èª¿æ´</div>
+            <div class="control-row">
+                <label>ç¶²æ ¼ééï¼Gapï¼<span class="value-tag" id="gapVal">10</span></label>
+                <input type="range" id="gapSlider" min="1" max="80" value="9">
+            </div>
+            <div class="control-row">
+                <label>ç¶ç·ç²ç´°ï¼Warpï¼<span class="value-tag" id="warpThickVal">8</span></label>
+                <input type="range" id="warpThickSlider" min="1" max="80" value="8">
+            </div>
+            <div class="control-row">
+                <label>ç·¯ç·ç²ç´°ï¼Weftï¼<span class="value-tag" id="weftThickVal">5</span></label>
+                <input type="range" id="weftThickSlider" min="1" max="80" value="5">
+            </div>
+
+            <div class="section-title">è³ªæ</div>
+            <div class="control-row">
+                <label>è¡¨é¢éè¨ï¼Noiseï¼<span class="value-tag" id="noiseVal">35%</span></label>
+                <input type="range" id="noiseSlider" min="0" max="100" value="35">
+            </div>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="fabricCanvas" width="500" height="500"></canvas>
+        </div>
+    </div>
+
+    <section class="swatch-panel" aria-labelledby="swatch-panel-heading">
+        <div class="swatch-panel-header">
+            <h2 id="swatch-panel-heading" class="swatch-panel-heading">è²ç¥¨</h2>
+            <div class="swatch-panel-actions">
+                <button type="button" id="saveSwatchBtn" class="btn-save">å²å­ç®åè²ç¥¨</button>
+            </div>
+        </div>
+        <div class="swatch-panel-toolbar" role="group" aria-label="è²ç¥¨ç¾¤çµ">
+            <div class="swatch-toolbar-field">
+                <label for="swatchGroupFilter" class="swatch-toolbar-label">ç¯©é¸</label>
+                <select id="swatchGroupFilter" class="swatch-group-select" aria-label="ä¾ç¾¤çµç¯©é¸è²ç¥¨"></select>
+            </div>
+            <button type="button" id="newSwatchGroupBtn" class="btn-tertiary">æ°å¢ç¾¤çµ</button>
+            <button type="button" id="manageSwatchGroupsBtn" class="btn-tertiary">ç®¡çåé¡</button>
+        </div>
+        <p id="swatchEmptyHint" class="swatch-empty">å°ç¡å²å­çè²ç¥¨</p>
+        <ul id="savedSwatchList" class="swatch-list" aria-label="å·²å²å­çè²ç¥¨"></ul>
+    </section>
+    </div>
+
+    <!-- å²å­è²ç¥¨ Modal -->
+    <div id="saveSwatchModal" class="save-swatch-modal" role="dialog" aria-modal="true" aria-labelledby="saveSwatchModalTitle" hidden>
+        <div class="save-swatch-modal-backdrop" id="saveSwatchModalBackdrop"></div>
+        <div class="save-swatch-modal-box">
+            <h2 id="saveSwatchModalTitle" class="save-swatch-modal-title">å²å­è²ç¥¨</h2>
+            <div class="save-swatch-modal-body">
+                <label for="saveSwatchNameInput" class="save-swatch-field-label">è²ç¥¨åç¨±</label>
+                <input type="text" id="saveSwatchNameInput" class="save-swatch-name-input" placeholder="å¯çç©ºï¼å°èªåå½å" autocomplete="off">
+                <label for="saveSwatchModalGroupSelect" class="save-swatch-field-label">å²å­è³</label>
+                <select id="saveSwatchModalGroupSelect" class="swatch-group-select save-swatch-group-select" aria-label="æ°è²ç¥¨è¦å­å¥çç¾¤çµ"></select>
+            </div>
+            <div class="save-swatch-modal-footer">
+                <button type="button" id="saveSwatchModalCancel" class="btn-save-modal-secondary">åæ¶</button>
+                <button type="button" id="saveSwatchModalConfirm" class="btn-save-modal-primary">å²å­</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- æ°å¢ç¾¤çµ Modalï¼èå²å­è²ç¥¨å½çªç¸åæ¨£å¼ï¼ -->
+    <div id="newGroupModal" class="save-swatch-modal save-swatch-modal--new-group" role="dialog" aria-modal="true" aria-labelledby="newGroupModalTitle" hidden>
+        <div class="save-swatch-modal-backdrop" id="newGroupModalBackdrop"></div>
+        <div class="save-swatch-modal-box">
+            <h2 id="newGroupModalTitle" class="save-swatch-modal-title">æ°å¢ç¾¤çµ</h2>
+            <div class="save-swatch-modal-body">
+                <label for="newGroupNameInput" class="save-swatch-field-label">ç¾¤çµåç¨±</label>
+                <input type="text" id="newGroupNameInput" class="save-swatch-name-input" placeholder="è¼¸å¥æ°ç¾¤çµåç¨±" autocomplete="off">
+            </div>
+            <div class="save-swatch-modal-footer">
+                <button type="button" id="newGroupModalCancel" class="btn-save-modal-secondary">åæ¶</button>
+                <button type="button" id="newGroupModalConfirm" class="btn-save-modal-primary">å»ºç«</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ç·¨è¼¯è²ç¥¨åç¨±èåé¡ Modal -->
+    <div id="editSwatchMetaModal" class="save-swatch-modal save-swatch-modal--edit-swatch-meta" role="dialog" aria-modal="true" aria-labelledby="editSwatchMetaModalTitle" hidden>
+        <div class="save-swatch-modal-backdrop" id="editSwatchMetaModalBackdrop"></div>
+        <div class="save-swatch-modal-box">
+            <h2 id="editSwatchMetaModalTitle" class="save-swatch-modal-title">ç·¨è¼¯è²ç¥¨</h2>
+            <div class="save-swatch-modal-body">
+                <label for="editSwatchMetaNameInput" class="save-swatch-field-label">è²ç¥¨åç¨±</label>
+                <input type="text" id="editSwatchMetaNameInput" class="save-swatch-name-input" placeholder="è²ç¥¨é¡¯ç¤ºåç¨±" autocomplete="off">
+                <label for="editSwatchMetaGroupSelect" class="save-swatch-field-label">åé¡</label>
+                <select id="editSwatchMetaGroupSelect" class="swatch-group-select save-swatch-group-select" aria-label="è²ç¥¨åé¡"></select>
+            </div>
+            <div class="save-swatch-modal-footer">
+                <button type="button" id="editSwatchMetaModalCancel" class="btn-save-modal-secondary">åæ¶</button>
+                <button type="button" id="editSwatchMetaModalConfirm" class="btn-save-modal-primary">å²å­</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ç®¡çåé¡ Modal -->
+    <div id="manageGroupsModal" class="manage-groups-modal" role="dialog" aria-modal="true" aria-labelledby="manageGroupsModalTitle" hidden>
+        <div class="manage-groups-modal-backdrop" id="manageGroupsModalBackdrop"></div>
+        <div class="manage-groups-modal-box">
+            <h2 id="manageGroupsModalTitle" class="manage-groups-modal-title">ç®¡çåé¡</h2>
+            <p class="manage-groups-modal-desc">å¯éæ°å½åæåªé¤åé¡ãåªé¤å¾ï¼è©²åé¡å§çè²ç¥¨ææ¹çºãæªåé¡ãã</p>
+            <div id="manageGroupsList" class="manage-groups-list"></div>
+            <div class="manage-groups-modal-footer">
+                <button type="button" id="manageGroupsModalClose" class="btn-save-modal-primary">éé</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantone FHI Modal -->
+    <div id="pantoneModal" class="pantone-modal" role="dialog" aria-modal="true" aria-labelledby="pantoneModalTitle" hidden>
+        <div class="pantone-modal-backdrop" id="pantoneBackdrop"></div>
+        <div class="pantone-modal-box">
+            <div class="pantone-modal-header">
+                <h2 id="pantoneModalTitle" class="pantone-modal-title">é¸æ Pantone FHI è²ç¥¨</h2>
+                <p class="pantone-modal-subtitle">Fashion, Home + Interiors (TPG)</p>
+            </div>
+            <div class="pantone-modal-search">
+                <input type="text" id="pantoneSearchInput" class="pantone-search-input" placeholder="æå°è²ç¥¨åç¨±æä»£ç¢¼â¦" autocomplete="off" spellcheck="false">
+            </div>
+            <div id="pantoneColorGrid" class="pantone-color-grid" role="listbox" aria-label="Pantone FHI è²ç¥¨"></div>
+            <div class="pantone-modal-footer">
+                <span id="pantoneResultCount" class="pantone-result-count"></span>
+                <button type="button" id="pantoneSkipBtn" class="btn-pantone-skip">è·³é / ä½¿ç¨ç®åè²å½©</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="weave.js"></script>
+</body>
+</html>
