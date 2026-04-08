@@ -11,7 +11,9 @@
 </head>
 <body>
 
+
     <h1 class="page-title">色織模擬<span>經緯獨立版</span></h1>
+
 
     <div class="page-main">
     <div class="wrapper">
@@ -39,6 +41,7 @@
                 <button type="button" id="swapColorsBtn" class="btn-secondary">經緯顏色互換 <span class="btn-icon" aria-hidden="true">⇄</span></button>
             </div>
 
+
             <div class="section-title">結構調整</div>
             <div class="control-row">
                 <label>網格間隙（Gap）<span class="value-tag" id="gapVal">10</span></label>
@@ -53,6 +56,7 @@
                 <input type="range" id="weftThickSlider" min="1" max="80" value="5">
             </div>
 
+
             <div class="section-title">質感</div>
             <div class="control-row">
                 <label>表面雜訊（Noise）<span class="value-tag" id="noiseVal">35%</span></label>
@@ -60,115 +64,21 @@
             </div>
         </div>
 
+
         <div class="canvas-wrap">
             <canvas id="fabricCanvas" width="500" height="500"></canvas>
         </div>
     </div>
 
+
     <section class="swatch-panel" aria-labelledby="swatch-panel-heading">
         <div class="swatch-panel-header">
             <h2 id="swatch-panel-heading" class="swatch-panel-heading">色票</h2>
             <div class="swatch-panel-actions">
+                <button type="button" id="exportSwatchBtn" class="btn-tertiary">匯出色票</button>
+                <label id="importSwatchLabel" class="btn-tertiary" style="cursor:pointer;margin:0;">匯入色票
+                    <input type="file" id="importSwatchInput" accept=".json" style="display:none;">
+                </label>
                 <button type="button" id="saveSwatchBtn" class="btn-save">儲存目前色票</button>
             </div>
         </div>
-        <div class="swatch-panel-toolbar" role="group" aria-label="色票群組">
-            <div class="swatch-toolbar-field">
-                <label for="swatchGroupFilter" class="swatch-toolbar-label">篩選</label>
-                <select id="swatchGroupFilter" class="swatch-group-select" aria-label="依群組篩選色票"></select>
-            </div>
-            <button type="button" id="newSwatchGroupBtn" class="btn-tertiary">新增群組</button>
-            <button type="button" id="manageSwatchGroupsBtn" class="btn-tertiary">管理分類</button>
-        </div>
-        <p id="swatchEmptyHint" class="swatch-empty">尚無儲存的色票</p>
-        <ul id="savedSwatchList" class="swatch-list" aria-label="已儲存的色票"></ul>
-    </section>
-    </div>
-
-    <!-- 儲存色票 Modal -->
-    <div id="saveSwatchModal" class="save-swatch-modal" role="dialog" aria-modal="true" aria-labelledby="saveSwatchModalTitle" hidden>
-        <div class="save-swatch-modal-backdrop" id="saveSwatchModalBackdrop"></div>
-        <div class="save-swatch-modal-box">
-            <h2 id="saveSwatchModalTitle" class="save-swatch-modal-title">儲存色票</h2>
-            <div class="save-swatch-modal-body">
-                <label for="saveSwatchNameInput" class="save-swatch-field-label">色票名稱</label>
-                <input type="text" id="saveSwatchNameInput" class="save-swatch-name-input" placeholder="可留空，將自動命名" autocomplete="off">
-                <label for="saveSwatchModalGroupSelect" class="save-swatch-field-label">儲存至</label>
-                <select id="saveSwatchModalGroupSelect" class="swatch-group-select save-swatch-group-select" aria-label="新色票要存入的群組"></select>
-            </div>
-            <div class="save-swatch-modal-footer">
-                <button type="button" id="saveSwatchModalCancel" class="btn-save-modal-secondary">取消</button>
-                <button type="button" id="saveSwatchModalConfirm" class="btn-save-modal-primary">儲存</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 新增群組 Modal（與儲存色票彈窗相同樣式） -->
-    <div id="newGroupModal" class="save-swatch-modal save-swatch-modal--new-group" role="dialog" aria-modal="true" aria-labelledby="newGroupModalTitle" hidden>
-        <div class="save-swatch-modal-backdrop" id="newGroupModalBackdrop"></div>
-        <div class="save-swatch-modal-box">
-            <h2 id="newGroupModalTitle" class="save-swatch-modal-title">新增群組</h2>
-            <div class="save-swatch-modal-body">
-                <label for="newGroupNameInput" class="save-swatch-field-label">群組名稱</label>
-                <input type="text" id="newGroupNameInput" class="save-swatch-name-input" placeholder="輸入新群組名稱" autocomplete="off">
-            </div>
-            <div class="save-swatch-modal-footer">
-                <button type="button" id="newGroupModalCancel" class="btn-save-modal-secondary">取消</button>
-                <button type="button" id="newGroupModalConfirm" class="btn-save-modal-primary">建立</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 編輯色票名稱與分類 Modal -->
-    <div id="editSwatchMetaModal" class="save-swatch-modal save-swatch-modal--edit-swatch-meta" role="dialog" aria-modal="true" aria-labelledby="editSwatchMetaModalTitle" hidden>
-        <div class="save-swatch-modal-backdrop" id="editSwatchMetaModalBackdrop"></div>
-        <div class="save-swatch-modal-box">
-            <h2 id="editSwatchMetaModalTitle" class="save-swatch-modal-title">編輯色票</h2>
-            <div class="save-swatch-modal-body">
-                <label for="editSwatchMetaNameInput" class="save-swatch-field-label">色票名稱</label>
-                <input type="text" id="editSwatchMetaNameInput" class="save-swatch-name-input" placeholder="色票顯示名稱" autocomplete="off">
-                <label for="editSwatchMetaGroupSelect" class="save-swatch-field-label">分類</label>
-                <select id="editSwatchMetaGroupSelect" class="swatch-group-select save-swatch-group-select" aria-label="色票分類"></select>
-            </div>
-            <div class="save-swatch-modal-footer">
-                <button type="button" id="editSwatchMetaModalCancel" class="btn-save-modal-secondary">取消</button>
-                <button type="button" id="editSwatchMetaModalConfirm" class="btn-save-modal-primary">儲存</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 管理分類 Modal -->
-    <div id="manageGroupsModal" class="manage-groups-modal" role="dialog" aria-modal="true" aria-labelledby="manageGroupsModalTitle" hidden>
-        <div class="manage-groups-modal-backdrop" id="manageGroupsModalBackdrop"></div>
-        <div class="manage-groups-modal-box">
-            <h2 id="manageGroupsModalTitle" class="manage-groups-modal-title">管理分類</h2>
-            <p class="manage-groups-modal-desc">可重新命名或刪除分類。刪除後，該分類內的色票會改為「未分類」。</p>
-            <div id="manageGroupsList" class="manage-groups-list"></div>
-            <div class="manage-groups-modal-footer">
-                <button type="button" id="manageGroupsModalClose" class="btn-save-modal-primary">關閉</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pantone FHI Modal -->
-    <div id="pantoneModal" class="pantone-modal" role="dialog" aria-modal="true" aria-labelledby="pantoneModalTitle" hidden>
-        <div class="pantone-modal-backdrop" id="pantoneBackdrop"></div>
-        <div class="pantone-modal-box">
-            <div class="pantone-modal-header">
-                <h2 id="pantoneModalTitle" class="pantone-modal-title">選擇 Pantone FHI 色票</h2>
-                <p class="pantone-modal-subtitle">Fashion, Home + Interiors (TPG)</p>
-            </div>
-            <div class="pantone-modal-search">
-                <input type="text" id="pantoneSearchInput" class="pantone-search-input" placeholder="搜尋色票名稱或代碼…" autocomplete="off" spellcheck="false">
-            </div>
-            <div id="pantoneColorGrid" class="pantone-color-grid" role="listbox" aria-label="Pantone FHI 色票"></div>
-            <div class="pantone-modal-footer">
-                <span id="pantoneResultCount" class="pantone-result-count"></span>
-                <button type="button" id="pantoneSkipBtn" class="btn-pantone-skip">跳過 / 使用目前色彩</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="weave.js"></script>
-</body>
-</html>
