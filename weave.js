@@ -2651,6 +2651,56 @@
         return t.toDataURL('image/png');
     }
 
+    function makeThumbFromSwatch(s) {
+        const size          = 100;
+        const t             = document.createElement('canvas');
+        t.width             = size;
+        t.height            = size;
+        const tctx          = t.getContext('2d');
+        const gap           = s.gap;
+        const warpT         = s.warpT;
+        const weftT         = s.weftT;
+        const warpColor     = s.warp;
+        const weftColor     = s.weft;
+        const noiseIntensity = s.noise / 100;
+        tctx.lineCap = 'butt';
+        tctx.strokeStyle = weftColor;
+        tctx.lineWidth   = weftT;
+        for (let y = gap / 2; y < size; y += gap) {
+            tctx.beginPath(); tctx.moveTo(0, y); tctx.lineTo(size, y); tctx.stroke();
+        }
+        tctx.strokeStyle = warpColor;
+        tctx.lineWidth   = warpT;
+        for (let x = gap / 2; x < size; x += gap) {
+            tctx.beginPath(); tctx.moveTo(x, 0); tctx.lineTo(x, size); tctx.stroke();
+        }
+        tctx.strokeStyle = weftColor;
+        tctx.lineWidth   = weftT;
+        for (let y = gap / 2, row = 0; y < size; y += gap, row++) {
+            for (let x = gap / 2, col = 0; x < size; x += gap, col++) {
+                if ((row + col) % 2 !== 0) {
+                    tctx.beginPath();
+                    tctx.moveTo(x - warpT / 2, y);
+                    tctx.lineTo(x + warpT / 2, y);
+                    tctx.stroke();
+                }
+            }
+        }
+        if (noiseIntensity > 0) {
+            const imageData = tctx.getImageData(0, 0, size, size);
+            const data      = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] === 0) continue;
+                const noise = (Math.random() - 0.5) * (noiseIntensity * 120);
+                data[i]     += noise;
+                data[i + 1] += noise;
+                data[i + 2] += noise;
+            }
+            tctx.putImageData(imageData, 0, 0);
+        }
+        return t.toDataURL('image/png');
+    }
+
     // ── Local storage ──
     function loadSwatches() {
         try {
@@ -3296,6 +3346,13 @@
     }
 
     // ── Init ──
+    if (!localStorage.getItem(STORAGE_KEY)) {
+        const swatchesWithThumbs = DEFAULT_SWATCHES.map(function (s) {
+            return Object.assign({}, s, { thumb: makeThumbFromSwatch(s) });
+        });
+        saveSwatches(swatchesWithThumbs);
+        saveGroups(DEFAULT_GROUPS.map(function (g) { return Object.assign({}, g); }));
+    }
     populateGroupSelects();
     draw();
     renderSavedList();
