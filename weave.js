@@ -2359,8 +2359,15 @@
     const editSwatchMetaGroupSelect   = document.getElementById('editSwatchMetaGroupSelect');
     const editSwatchMetaModalCancel   = document.getElementById('editSwatchMetaModalCancel');
     const editSwatchMetaModalConfirm  = document.getElementById('editSwatchMetaModalConfirm');
+    const confirmActionModal          = document.getElementById('confirmActionModal');
+    const confirmActionModalBackdrop  = document.getElementById('confirmActionModalBackdrop');
+    const confirmActionModalTitle     = document.getElementById('confirmActionModalTitle');
+    const confirmActionModalMessage   = document.getElementById('confirmActionModalMessage');
+    const confirmActionModalCancel    = document.getElementById('confirmActionModalCancel');
+    const confirmActionModalConfirm   = document.getElementById('confirmActionModalConfirm');
 
     let lastModalSaveGroup = '';
+    let confirmActionModalOnConfirm = null;
     let editSwatchMetaTargetId = null;
 
     // ── Pantone state ──
@@ -2877,6 +2884,31 @@
         if (editSwatchMetaModal) editSwatchMetaModal.hidden = true;
     }
 
+    function openConfirmActionModal(opts) {
+        if (!confirmActionModal || !confirmActionModalTitle) return;
+        const o = opts || {};
+        confirmActionModalOnConfirm = typeof o.onConfirm === 'function' ? o.onConfirm : null;
+        confirmActionModalTitle.textContent = o.title ? o.title : '確認';
+        if (confirmActionModalMessage) confirmActionModalMessage.textContent = o.message ? o.message : '';
+        if (confirmActionModalConfirm) confirmActionModalConfirm.textContent = o.confirmLabel ? o.confirmLabel : '刪除';
+        confirmActionModal.hidden = false;
+        setTimeout(function () {
+            if (confirmActionModalConfirm) confirmActionModalConfirm.focus();
+        }, 50);
+    }
+
+    function closeConfirmActionModal() {
+        if (confirmActionModal) confirmActionModal.hidden = true;
+        confirmActionModalOnConfirm = null;
+    }
+
+    function triggerConfirmActionModal() {
+        const fn = confirmActionModalOnConfirm;
+        confirmActionModalOnConfirm = null;
+        if (confirmActionModal) confirmActionModal.hidden = true;
+        if (fn) fn();
+    }
+
     function confirmEditSwatchMetaFromModal() {
         if (!editSwatchMetaTargetId) return;
         const found = _swatchCache.find(function (x) { return x.id === editSwatchMetaTargetId; });
@@ -2979,23 +3011,29 @@
     }
 
     function deleteSwatchGroup(groupId) {
-        if (!window.confirm('確定刪除此分類？該分類內的色票將改為「未分類」。')) return;
-        const groups = loadGroups().filter(function (x) { return x.id !== groupId; });
-        saveGroups(groups);
-        const swatches = loadSwatches().map(function (s) {
-            if (s.groupId === groupId) {
-                const next = Object.assign({}, s);
-                next.groupId = null;
-                return next;
+        openConfirmActionModal({
+            title:        '刪除分類',
+            message:      '確定刪除此分類？該分類內的色票將改為「未分類」。',
+            confirmLabel: '刪除',
+            onConfirm:    function () {
+                const groups = loadGroups().filter(function (x) { return x.id !== groupId; });
+                saveGroups(groups);
+                const swatches = loadSwatches().map(function (s) {
+                    if (s.groupId === groupId) {
+                        const next = Object.assign({}, s);
+                        next.groupId = null;
+                        return next;
+                    }
+                    return s;
+                });
+                saveSwatches(swatches);
+                if (lastModalSaveGroup === groupId) lastModalSaveGroup = '';
+                if (swatchGroupFilter && swatchGroupFilter.value === groupId) {
+                    swatchGroupFilter.value = '';
+                }
+                refreshAfterGroupChange();
             }
-            return s;
         });
-        saveSwatches(swatches);
-        if (lastModalSaveGroup === groupId) lastModalSaveGroup = '';
-        if (swatchGroupFilter && swatchGroupFilter.value === groupId) {
-            swatchGroupFilter.value = '';
-        }
-        refreshAfterGroupChange();
     }
 
     function getSwatchGroupLabel(item, groups) {
@@ -3191,10 +3229,17 @@
             delBtn.className   = 'btn-delete';
             delBtn.textContent = '刪除';
             delBtn.addEventListener('click', function () {
-                _swatchCache = _swatchCache.filter(function (x) { return x.id !== item.id; });
-                renderSavedList();
-                fetch('/api/swatches/' + item.id, { method: 'DELETE' })
-                    .catch(function (e) { console.error('delete swatch:', e); });
+                openConfirmActionModal({
+                    title:        '刪除色票',
+                    message:      '確定刪除此色票？',
+                    confirmLabel: '刪除',
+                    onConfirm:    function () {
+                        _swatchCache = _swatchCache.filter(function (x) { return x.id !== item.id; });
+                        renderSavedList();
+                        fetch('/api/swatches/' + item.id, { method: 'DELETE' })
+                            .catch(function (e) { console.error('delete swatch:', e); });
+                    }
+                });
             });
 
             actions.appendChild(applyBtn);
@@ -3375,6 +3420,21 @@
     if (manageGroupsModal) {
         manageGroupsModal.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') closeManageGroupsModal();
+        });
+    }
+
+    if (confirmActionModalBackdrop) {
+        confirmActionModalBackdrop.addEventListener('click', closeConfirmActionModal);
+    }
+    if (confirmActionModalCancel) {
+        confirmActionModalCancel.addEventListener('click', closeConfirmActionModal);
+    }
+    if (confirmActionModalConfirm) {
+        confirmActionModalConfirm.addEventListener('click', triggerConfirmActionModal);
+    }
+    if (confirmActionModal) {
+        confirmActionModal.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeConfirmActionModal();
         });
     }
 
