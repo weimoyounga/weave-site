@@ -1,0 +1,12 @@
+{
+  "name": "weave",
+  "version": "1.0.0",
+  "description": "2D色織模版共用色票系統",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
