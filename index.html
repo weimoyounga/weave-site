@@ -137,6 +137,21 @@
         </div>
     </div>
 
+    <!-- 確認動作 Modal（與儲存色票相同樣式） -->
+    <div id="confirmActionModal" class="save-swatch-modal save-swatch-modal--confirm" role="dialog" aria-modal="true" aria-labelledby="confirmActionModalTitle" aria-describedby="confirmActionModalMessage" hidden>
+        <div class="save-swatch-modal-backdrop" id="confirmActionModalBackdrop"></div>
+        <div class="save-swatch-modal-box">
+            <h2 id="confirmActionModalTitle" class="save-swatch-modal-title">確認</h2>
+            <div class="save-swatch-modal-body">
+                <p id="confirmActionModalMessage" class="save-swatch-modal-message"></p>
+            </div>
+            <div class="save-swatch-modal-footer">
+                <button type="button" id="confirmActionModalCancel" class="btn-save-modal-secondary">取消</button>
+                <button type="button" id="confirmActionModalConfirm" class="btn-save-modal-primary btn-save-modal-primary--danger">刪除</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 管理分類 Modal -->
     <div id="manageGroupsModal" class="manage-groups-modal" role="dialog" aria-modal="true" aria-labelledby="manageGroupsModalTitle" hidden>
         <div class="manage-groups-modal-backdrop" id="manageGroupsModalBackdrop"></div>
