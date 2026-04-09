@@ -417,6 +417,11 @@ input[type="range"]::-moz-range-track {
     z-index: 970;
 }
 
+/* 確認刪除等：須蓋在「管理分類」之上 */
+.save-swatch-modal--confirm {
+    z-index: 980;
+}
+
 .save-swatch-modal-backdrop {
     position: absolute;
     inset: 0;
@@ -448,6 +453,13 @@ input[type="range"]::-moz-range-track {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+}
+
+.save-swatch-modal-message {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text);
 }
 
 .save-swatch-field-label {
@@ -522,6 +534,15 @@ input[type="range"]::-moz-range-track {
 }
 
 .btn-save-modal-primary:hover {
+    opacity: 0.92;
+}
+
+.btn-save-modal-primary--danger {
+    background: #b91c1c;
+    color: #fff;
+}
+
+.btn-save-modal-primary--danger:hover {
     opacity: 0.92;
 }
 
